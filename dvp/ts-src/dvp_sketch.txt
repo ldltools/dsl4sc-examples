@@ -1,0 +1,94 @@
+
+# event handler (JS) -> event (dsl4sc) の対応
+
+- event handler always returns ok, raise error (ng)
+- event hander "h" -> event "h", "h_ok", "h_ng"
+
+# dvp.ts (人が書く version)
+
+settle ()
+{
+    aBond.transfer({ newOwner: this.c.buyer };
+    aCash.transfer({ newOwner: this.c.buyer };
+    return ok
+}
+
+# dvp.dsl (人が書く version)
+
+/* event 宣言 (省略可)
+event 
+settle, settle_ok, settle_ng,
+aBond.transfer, aBond.transfer_ok, aBond.transfer_ng,
+aCash.transfer, aCash.transfer_ok, aCash.transfer_ng;
+*/
+
+// 省略してもよい?
+protocol
+  settle;
+  aBond.transfer;
+    (aBond.transfer_ok; aCash.tranfer; aCash.transfer_ok; settle_ok
+     +
+     (aBond.transfer_ok; aCash.tranfer; aCash.transfer_ng + aBond.transfer_ng); settle_ng
+    );;
+
+// 検証用変数
+variable
+  settled,
+  bond_tranferred, cash_transfered;
+
+rule // pseudo-code
+// if (settle terminates normally) then ensure settled
+on settle_ok ensure settled
+
+// if (aBond.transfer terminates normally) then ensure bond_transffered
+on aBond.transfer_ok ensure bond_transffered;
+// if (aCash.transfer terminates normally) then ensure cash_transffered
+on aCash.transfer_ok ensure cash_transffered;
+...
+
+property
+  !settled, !b_tranferred, !c_transfered; // initial condition
+
+  // safety
+  [](settled -> (b_tranferred & c_transfered |  !b_tranferred & !c_transfered)
+  // liveness
+  []<>settled
+
+# dvp.ts (自動? preprocess 後人が書く)
+
+//元の dvp.ts から、以下の event handlers が自動生成される
+
+settle ()
+{
+    raise ("aBond.transfer")
+}
+
+settle_ok ()
+{
+}
+
+settle_ng ()
+{
+}
+
+aBond.transfer ()
+{
+  // do what the original aBond.transfer does
+
+  if (result is ok)
+     raise ("aBond.transfer_ok")
+  else
+     raise ("aBond.transfer_ng")
+}
+
+aBond.transfer_ok ()
+{
+    raise ("aCash.transfer")
+}  
+
+
+aBond.transfer_ng ()
+{
+    // rollback
+}
+

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" datamodel="ecmascript" initial="q2">
+  <datamodel/>
+  <state id="q7">
+    <transition target="q9" event="rollback">
+      <!--tid t40_1-->
+      <!--transition: curr_world: bond_transferred & cash_transferred | bond_transferred & !cash_transferred label: !bond_transferred & !cash_transferred next_world: !bond_transferred & !cash_transferred-->
+      <!--rule: r3 event: rollback certainty: 1-->
+      <!--rule.when: true-->
+      <!--rule.ensure: !bond_transferred & !cash_transferred-->
+    </transition>
+  </state>
+  <final id="q10">
+    <formula xmlns="https://github.com/ldltools/dsl4sc">bond_transferred &amp; cash_transferred | !bond_transferred &amp; !cash_transferred</formula>
+  </final>
+  <state id="q8">
+    <transition target="q10" event="_accept">
+      <!--tid t46_1-->
+    </transition>
+  </state>
+  <state id="q11">
+    <transition target="q10" event="_accept">
+      <!--tid t57_1-->
+    </transition>
+  </state>
+  <state id="q6">
+    <transition target="q8" event="END">
+      <!--tid t33_1-->
+    </transition>
+    <transition target="q7" event="cash_transfer_err">
+      <!--tid t36_1-->
+    </transition>
+  </state>
+  <state id="q4">
+    <transition target="q5" event="bond_transfer">
+      <!--tid t16_1-->
+      <!--transition: curr_world: !bond_transferred & !cash_transferred label: bond_transferred & !cash_transferred next_world: bond_transferred & !cash_transferred-->
+      <!--rule: r1 event: bond_transfer certainty: 1-->
+      <!--rule.when: true-->
+      <!--rule.ensure: bond_transferred-->
+    </transition>
+  </state>
+  <state id="q2">
+    <transition target="q4" event="settle">
+      <!--tid t10_1-->
+    </transition>
+  </state>
+  <state id="q9">
+    <transition target="q11" event="END">
+      <!--tid t51_1-->
+    </transition>
+  </state>
+  <state id="q5">
+    <transition target="q6" event="cash_transfer">
+      <!--tid t23_1-->
+      <!--transition: curr_world: bond_transferred & !cash_transferred label: bond_transferred & cash_transferred next_world: bond_transferred & cash_transferred-->
+      <!--rule: r2 event: cash_transfer certainty: 1-->
+      <!--rule.when: true-->
+      <!--rule.ensure: cash_transferred-->
+    </transition>
+    <transition target="q7" event="bond_transfer_err">
+      <!--tid t27_1-->
+    </transition>
+  </state>
+</scxml>

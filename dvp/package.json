@@ -1,0 +1,27 @@
+{
+    "name": "dvp-i2r",
+    "version": "1.0.0",
+    "description": "Simplified version of DSL4SC DvP examples.",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc -p ${INIT_CWD}",
+        "test": "jest"
+    },
+    "keywords": [],
+    "author": "Shin Saito <shinsa@jp.ibm.com>",
+    "license": "ISC",
+    "dependencies": {
+        "@types/node": "^12.7.0",
+        "chalk": "^2.4.2",
+        "jest": "^24.8.0",
+        "jest-extended": "^0.11.2",
+        "typescript": "^3.5.3"
+    },
+    "jest": {
+        "setupFilesAfterEnv": [
+            "jest-extended"
+        ]
+    },
+    "devDependencies": {},
+    "repository": "https://github.ibm.com/trl-ccflow/dsl4sc_dvp.git"
+}
