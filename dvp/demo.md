@@ -8,8 +8,9 @@ A protocol in financial trade which atomically swap seller's security and buyer'
 
 ## Setup
 
-See [README.md](README.md).
-This document assumes that you're in [this](.) directory.
+See [README](README.md).
+
+Hereafter we assume that you checked out this repository and you're in [this](.) directory.
 
 ## Implementing DvP as a Smart Contract
 
@@ -323,21 +324,19 @@ protocol
     (
         (bond_transfer_err; rollback) +
         cash_transfer; (cash_transfer_err; rollback)?
-    );
-    END
+    )
 ;;
 ```
 
 The notation is similar to regular expressions; each word denotes an event name, `ev1; ev2` expresses that an event `ev2` immediately follows an event `ev1`, `ev1 + ev2` means that either `ev1` or `ev2` should occur, `ev?` requires `ev` can occur at most once.
-`END` is a special event name which means that all events are triggered.
 
 Unfolding the expression makes understand the expression easier.
 All the following sequences are valid by the spec above:
 
 ```text
-settle; bond_transfer; bond_transfer_err; rollback; END
-settle; bond_transfer; cash_transfer; END
-settle; bond_transfer; cash_transfer; cash_transfer_err; rollback; END
+settle; bond_transfer; bond_transfer_err; rollback
+settle; bond_transfer; cash_transfer
+settle; bond_transfer; cash_transfer; cash_transfer_err; rollback
 ```
 
 Here we specified that **rollback operation should follow after failed operations.**
@@ -355,13 +354,18 @@ Our transpiler `safeguard` decorates the contract codes based on the specificati
 Let's transpile it (here we run the tool in the `dsl4sc-dev` Docker container):
 
 ```bash
-$ make docker
+$ make run-safeguard
 docker run -it -v "`pwd`:/root/dvp" --rm ldltools/dsl4sc-dev bash -c ". .profile && cd /root/dvp && make -B"
-safeguard ts-preprocessed/ts/dvp-bad.ts --js-class=DvP --js-keep-decorators --js-decorators=initial,transitions --js-decorators-lib=./decorator --spec dvp3_protocol.spec -o ts-enforced/ts/dvp-bad.ts
-safeguard ts-preprocessed/ts/dvp-good.ts --js-class=DvP --js-keep-decorators --js-decorators=initial,transitions --js-decorators-lib=./decorator --spec dvp3_protocol.spec -o ts-enforced/ts/dvp-good.ts
+rules2scxml  --exit=END dvp3.spec -o dvp3.scxml
+safeguard ts-preprocessed/ts/dvp-bad.ts --js-class=DvP --js-keep-decorators --js-decorators=initial,transitions --js-decorators-lib=./decorator --spec dvp3.scxml -o ts-enforced/ts/dvp-bad.ts
+safeguard ts-preprocessed/ts/dvp-good.ts --js-class=DvP --js-keep-decorators --js-decorators=initial,transitions --js-decorators-lib=./decorator --spec dvp3.scxml -o ts-enforced/ts/dvp-good.ts
 ```
 
-It adds Typescript (or JavaScript) decorator `@intial` and `@transitions` based on the verification result.
+Safeguard generates a state machine for the specification as follows:
+
+![state machine generated](dvp3.png)
+
+Then it adds Typescript (or JavaScript) decorators `@intial` and `@transitions` based on the state machine.
 The decorated contract is as follows ([ts-enforced/ts/dvp-bad.ts](ts-enforced/ts/dvp-bad.ts)):
 
 ```typescript

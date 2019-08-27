@@ -6,13 +6,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const decorator_1 = require("./decorator");
 const chalk = require('chalk'); // typeless import
 const c = chalk.cyan;
 const g = chalk.green;
 const y = chalk.yellow;
 const m = chalk.magenta;
 const dsl4sc_1 = require("./dsl4sc");
-const decorator_1 = require("./decorator");
 const bond_1 = require("./bond");
 exports.Bond = bond_1.Bond;
 const cash_1 = require("./cash"); // Bad implementation example
@@ -43,8 +43,8 @@ let DvP = class DvP extends dsl4sc_1.StateMachine {
         console.log(g('  TX processing starts'));
         this.raise('settle');
     }
-    // expects: _state == "q10" || _state == "q6" || _state == "q5"
-    // ensures: (_state_pre == "q10" && _state == "q7") || (_state_pre == "q6" && _state == "q7") || (_state_pre == "q5" && _state == "q7")
+    // expects: _state == "q7" || _state == "q8"
+    // ensures: (_state_pre == "q7" && _state == "q9") || (_state_pre == "q8" && _state == "q9")
     END() {
         console.log(g('  TX processing completed'));
     }
@@ -81,13 +81,13 @@ let DvP = class DvP extends dsl4sc_1.StateMachine {
         this.raise('cash_transfer');
     }
     // expects: _state == "q5"
-    // ensures: (_state_pre == "q5" && _state == "q8")
+    // ensures: (_state_pre == "q5" && _state == "q6")
     bond_transfer_err() {
         // this.raise('settle_err')
         this.raise('settle_ok');
     } // cash.transfer
     // expects: _state == "q5"
-    // ensures: (_state_pre == "q5" && _state == "q6")
+    // ensures: (_state_pre == "q5" && _state == "q7")
     cash_transfer() {
         try {
             this.cash.transfer({
@@ -102,14 +102,14 @@ let DvP = class DvP extends dsl4sc_1.StateMachine {
     cash_transfer_ok() {
         this.raise('settle_ok');
     }
-    // expects: _state == "q6"
-    // ensures: (_state_pre == "q6" && _state == "q8")
+    // expects: _state == "q7"
+    // ensures: (_state_pre == "q7" && _state == "q6")
     cash_transfer_err() {
         // this.raise('settle_err')
         this.raise('settle_ok');
     } // rollback
-    // expects: _state == "q8"
-    // ensures: (_state_pre == "q8" && _state == "q10")
+    // expects: _state == "q6"
+    // ensures: (_state_pre == "q6" && _state == "q8")
     rollback() {
         console.log(m('  rollback operations'));
         this.raise('bond_rollback');
@@ -122,12 +122,14 @@ let DvP = class DvP extends dsl4sc_1.StateMachine {
         this.cash.rollback();
         this.raise('rollback_ok');
     }
+    _reset() {
+        this._state = "q2";
+    }
 }; // rexport for convenience
 __decorate([
     decorator_1.transitions({
-        "q10": "q7",
-        "q6": "q7",
-        "q5": "q7"
+        "q7": "q9",
+        "q8": "q9"
     })
 ], DvP.prototype, "END", null);
 __decorate([
@@ -142,25 +144,26 @@ __decorate([
 ], DvP.prototype, "bond_transfer", null);
 __decorate([
     decorator_1.transitions({
-        "q5": "q8"
+        "q5": "q6"
     })
 ], DvP.prototype, "bond_transfer_err", null);
 __decorate([
     decorator_1.transitions({
-        "q5": "q6"
+        "q5": "q7"
     })
 ], DvP.prototype, "cash_transfer", null);
 __decorate([
     decorator_1.transitions({
-        "q6": "q8"
+        "q7": "q6"
     })
 ], DvP.prototype, "cash_transfer_err", null);
 __decorate([
     decorator_1.transitions({
-        "q8": "q10"
+        "q6": "q8"
     })
 ], DvP.prototype, "rollback", null);
 DvP = __decorate([
     decorator_1.initial("q2")
 ], DvP);
 exports.DvP = DvP;
+const assert = require("assert");

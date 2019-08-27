@@ -1,0 +1,31 @@
+@startuml 
+state q7
+state q8
+state q6
+state q4
+state q2
+state q5
+q7 --> q9:(1) 
+q7 --> q6:(2)cash_transfer_err
+q8 --> q9:(1) 
+q6 --> q8:(1)rollback
+q4 --> q5:(1)bond_transfer
+q2 --> q4:(1)settle
+q5 --> q6:(1)bond_transfer_err
+q5 --> q7:(2)cash_transfer
+[*] --> q2
+state q9
+q9 --> [*]
+state q7 {
+}
+state q8 {
+}
+state q6 {
+}
+state q4 {
+}
+state q2 {
+}
+state q5 {
+}
+@enduml

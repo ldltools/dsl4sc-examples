@@ -53,11 +53,11 @@ class DvP extends StateMachine {
     this.raise('settle');
   }
 
-  // expects: _state == "q6" || _state == "q9"
-  // ensures: (_state_pre == "q6" && _state == "q8") || (_state_pre == "q9" && _state == "q11")
+  // expects: _state == "q7" || _state == "q8"
+  // ensures: (_state_pre == "q7" && _state == "q9") || (_state_pre == "q8" && _state == "q9")
   @transitions({
-    "q6": "q8",
-    "q9": "q11"
+    "q7": "q9",
+    "q8": "q9"
   })
   END() {
     console.log(g('  TX processing completed'));
@@ -108,9 +108,9 @@ class DvP extends StateMachine {
   }
 
   // expects: _state == "q5"
-  // ensures: (_state_pre == "q5" && _state == "q7")
+  // ensures: (_state_pre == "q5" && _state == "q6")
   @transitions({
-    "q5": "q7"
+    "q5": "q6"
   })
   bond_transfer_err() {
     // this.raise('settle_err')
@@ -119,9 +119,9 @@ class DvP extends StateMachine {
 
 
   // expects: _state == "q5"
-  // ensures: (_state_pre == "q5" && _state == "q6")
+  // ensures: (_state_pre == "q5" && _state == "q7")
   @transitions({
-    "q5": "q6"
+    "q5": "q7"
   })
   cash_transfer() {
     try {
@@ -138,10 +138,10 @@ class DvP extends StateMachine {
     this.raise('settle_ok');
   }
 
-  // expects: _state == "q6"
-  // ensures: (_state_pre == "q6" && _state == "q7")
+  // expects: _state == "q7"
+  // ensures: (_state_pre == "q7" && _state == "q6")
   @transitions({
-    "q6": "q7"
+    "q7": "q6"
   })
   cash_transfer_err() {
     // this.raise('settle_err')
@@ -149,10 +149,10 @@ class DvP extends StateMachine {
   } // rollback
 
 
-  // expects: _state == "q7"
-  // ensures: (_state_pre == "q7" && _state == "q9")
+  // expects: _state == "q6"
+  // ensures: (_state_pre == "q6" && _state == "q8")
   @transitions({
-    "q7": "q9"
+    "q6": "q8"
   })
   rollback() {
     console.log(m('  rollback operations'));
@@ -170,7 +170,7 @@ class DvP extends StateMachine {
   }
 
   _reset() {
-    _state = "q2";
+    this._state = "q2";
   }
 
 } // rexport for convenience
